@@ -4,11 +4,12 @@ import { AppContext } from "../context/AppContext";
 import DataTable from "../components/DataTable";
 import Filters from "../components/Filters";
 import PaginationComponent from "../components/Pagination";
-import TabButton from "../components/TabButton";
 import { Box } from "@mui/material";
+import TabButton from "../components/TabButton";
 
 const Users = () => {
-    const { users, setUsers, pageSize } = useContext(AppContext);
+    const { users, setUsers, filteredUsers, setFilteredUsers, pageSize } =
+        useContext(AppContext);
     const [page, setPage] = useState(1);
 
     const fetchUsers = async (params = {}) => {
@@ -16,6 +17,7 @@ const Users = () => {
             params: { limit: pageSize, skip: (page - 1) * pageSize, ...params },
         });
         setUsers(response.data.users);
+        setFilteredUsers(response.data.users);
     };
 
     useEffect(() => {
@@ -23,25 +25,20 @@ const Users = () => {
     }, [pageSize, page]);
 
     return (
-        <Box
-            sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-            }}
-        >
-            <Box sx={{my:2}}>
+        <Box sx={{display:"flex",flexDirection:"column",alignItems:"center"}}>
+            <Box sx={{ my: 2 }}>
                 <TabButton />
             </Box>
-            <Box sx={{my:2}}>
+            <Box sx={{ my: 2 }}>
                 <Filters
-                    columns={["firstName", "lastName", "email"]}
+                    columns={["firstName", "lastName", "email","phone","age","gender"]}
                     fetchData={fetchUsers}
+                    type="users"
                 />
             </Box>
-            <Box sx={{my:2}}>
+            <Box sx={{ my: 2 }}>
                 <DataTable
-                    data={users}
+                    data={filteredUsers}
                     columns={[
                         "firstName",
                         "lastName",
@@ -52,7 +49,7 @@ const Users = () => {
                     ]}
                 />
             </Box>
-            <Box sx={{my:2}}>
+            <Box sx={{ my: 2 }}>
                 <PaginationComponent
                     count={10}
                     page={page}
